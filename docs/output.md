@@ -1,4 +1,4 @@
-# nf-core/wgsratblab: Output
+# ratbLab_wgs: Output
 
 ## Introduction
 
