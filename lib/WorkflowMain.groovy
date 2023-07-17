@@ -1,5 +1,5 @@
 //
-// This file holds several functions specific to the main.nf workflow in the nf-core/wgsratblab pipeline
+// This file holds several functions specific to the main.nf workflow in the ratbLab_wgs pipeline
 //
 
 class WorkflowMain {

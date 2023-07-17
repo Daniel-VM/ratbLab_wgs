@@ -1,4 +1,4 @@
-# nf-core/wgsratblab: Citations
+# ratbLab_wgs: Citations
 
 ## [nf-core](https://pubmed.ncbi.nlm.nih.gov/32055031/)
 

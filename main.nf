@@ -2,6 +2,8 @@
 /*
 ======================================================
     WGS bacteria workflow || ratb-isciii Lab
+
+    git: https://github.com/Daniel-VM/ratbLab_wgs/tree/dev
 ======================================================
 */
 

@@ -1,8 +1,8 @@
 //
-// This file holds several functions specific to the workflow/wgsratblab.nf in the nf-core/wgsratblab pipeline
+// This file holds several functions specific to the workflow/ratbLab_wgs.nf in the ratbLab_wgs pipeline
 //
 
-class WorkflowWgsratblab {
+class WorkflowratbLab_wgs {
 
     //
     // Check and validate parameters
