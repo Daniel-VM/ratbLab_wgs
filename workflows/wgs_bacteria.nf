@@ -22,15 +22,15 @@ if (params.input)     { ch_input = file( params.input, checkIfExists: true ) }
 ======================================================
 */
 include { TRIMMOMMATIC_FASTQC } from '../subworkflows/local/preprocessing'
-
+include { GENOME_ASSEMBLY     } from '../subworkflows/local/genomeassembly'
 /*
 ======================================================
     NF-CORE MODULES/SUBWORKFLOWS
 ======================================================
 */
-include { INPUT_CHECK } from '../subworkflows/local/input_check'
-include { CAT_FASTQ   } from '../modules/nf-core/cat/fastq/main'
-include { MASH_SCREEN } from '../modules/nf-core/mash/screen/main'                                              
+include { INPUT_CHECK   } from '../subworkflows/local/input_check'
+include { CAT_FASTQ     } from '../modules/nf-core/cat/fastq/main'
+include { MASH_SCREEN   } from '../modules/nf-core/mash/screen/main'               
 
 /*
 ======================================================
@@ -83,16 +83,21 @@ workflow WGS_BACTERIA {
     .set { ch_trimmed_reads }
 
     ch_versions = ch_versions.mix(TRIMMOMMATIC_FASTQC.out.versions)
-    // MODULE: SCREEN FOR CONAMINANTS (from nf-core/genomeassembler)
+    // MODULE: SCREEN FOR CONAMINANTS
+    // TODO: replace MASH_SCREEN with CUSTMO_MASH_SCREEN (add ratb lablog steps)
+    // TODO: collect this output and passit to ratb's py script
     MASH_SCREEN ( 
         ch_trimmed_reads.transpose(),
         params.mash_screen_db
      )
     
+    // SUBWORKFLOW: GENOME ASSEMBLY
+    GENOME_ASSEMBLY(
+        ch_trimmed_reads.map{ meta, fastq -> [meta, fastq, []] },
+        null, // ch_fasta,
+        null, // ch_gff
+    )
 
-
-
-    // MODULE: GENOME ASSEMBLY
 
     // MODULE: VERSION CONTROL
 }
