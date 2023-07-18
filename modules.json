@@ -20,6 +20,11 @@
                         "git_sha": "49b18b1639f4f7104187058866a8fab33332bdfe",
                         "installed_by": ["modules"]
                     },
+                    "mash/screen": {
+                        "branch": "master",
+                        "git_sha": "911696ea0b62df80e900ef244d7867d177971f73",
+                        "installed_by": ["modules"]
+                    },
                     "multiqc": {
                         "branch": "master",
                         "git_sha": "90aef30f432332bdf0ce9f4b9004aa5d5c4960bb",

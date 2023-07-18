@@ -30,6 +30,7 @@ include { TRIMMOMMATIC_FASTQC } from '../subworkflows/local/preprocessing'
 */
 include { INPUT_CHECK } from '../subworkflows/local/input_check'
 include { CAT_FASTQ   } from '../modules/nf-core/cat/fastq/main'
+include { MASH_SCREEN } from '../modules/nf-core/mash/screen/main'                                              
 
 /*
 ======================================================
@@ -71,14 +72,27 @@ workflow WGS_BACTERIA {
     .reads
     .mix(ch_fastq.single)
     .set { ch_cat_fastq }
+    
     ch_versions = ch_versions.mix(CAT_FASTQ.out.versions.first().ifEmpty(null))
 
     // SUBWORKFLOW: QC AND PREPROCESSING
     TRIMMOMMATIC_FASTQC(
         ch_cat_fastq
     )
+    .trimmed_reads
+    .set { ch_trimmed_reads }
 
-    // SUBWORKFLOW: GENOME ASSEMBLY
+    ch_versions = ch_versions.mix(TRIMMOMMATIC_FASTQC.out.versions)
+    // MODULE: SCREEN FOR CONAMINANTS (from nf-core/genomeassembler)
+    MASH_SCREEN ( 
+        ch_trimmed_reads.transpose(),
+        params.mash_screen_db
+     )
+    
+
+
+
+    // MODULE: GENOME ASSEMBLY
 
     // MODULE: VERSION CONTROL
 }
