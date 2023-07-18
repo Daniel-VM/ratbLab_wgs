@@ -21,6 +21,7 @@ if (params.input)     { ch_input = file( params.input, checkIfExists: true ) }
     LOCAL MODULES/SUBWORKFLOWS
 ======================================================
 */
+include { TRIMMOMMATIC_FASTQC } from '../subworkflows/local/preprocessing'
 
 /*
 ======================================================
@@ -71,4 +72,13 @@ workflow WGS_BACTERIA {
     .mix(ch_fastq.single)
     .set { ch_cat_fastq }
     ch_versions = ch_versions.mix(CAT_FASTQ.out.versions.first().ifEmpty(null))
+
+    // SUBWORKFLOW: QC AND PREPROCESSING
+    TRIMMOMMATIC_FASTQC(
+        ch_cat_fastq
+    )
+
+    // SUBWORKFLOW: GENOME ASSEMBLY
+
+    // MODULE: VERSION CONTROL
 }
