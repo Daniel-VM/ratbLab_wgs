@@ -2,6 +2,7 @@
 work/
 data/
 results/
+conf/nextflow_*.config
 .DS_Store
 testing/
 testing*
