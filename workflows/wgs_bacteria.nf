@@ -29,9 +29,10 @@ include { REPORT_MASH_SCREEN    } from '../modules/local/report_mash_screen'
     NF-CORE MODULES/SUBWORKFLOWS
 ======================================================
 */
-include { INPUT_CHECK           } from '../subworkflows/local/input_check'
-include { CAT_FASTQ             } from '../modules/nf-core/cat/fastq/main'
-include { MASH_SCREEN           } from '../modules/nf-core/mash/screen/main'               
+include { INPUT_CHECK                   } from '../subworkflows/local/input_check'
+include { CAT_FASTQ                     } from '../modules/nf-core/cat/fastq/main'
+include { MASH_SCREEN                   } from '../modules/nf-core/mash/screen/main'        
+include { CUSTOM_DUMPSOFTWAREVERSIONS   } from '../modules/nf-core/custom/dumpsoftwareversions/main'               
 
 /*
 ======================================================
@@ -106,5 +107,8 @@ workflow WGS_BACTERIA {
         null, // ch_gff
     )
 
-    // MODULE: VERSION CONTROL
+    // MODULE: Unify program versions
+    CUSTOM_DUMPSOFTWAREVERSIONS (
+        ch_versions.unique().collectFile(name: 'collated_versions.yml')
+        )
 }
