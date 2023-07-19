@@ -12,16 +12,33 @@ The directories listed below will be created in the results directory after the 
 
 The pipeline is built using [Nextflow](https://www.nextflow.io/) and processes data using the following steps:
 
-* [FastQC](#fastqc) - Raw read QC
+* [Trimmomatic](#trimmomatic) - Adapter trimming
+* [FastQC](#fastqc) - trimmed read QC
+* [Mash](#mash) - screen contamnation
+* [Unicycler](#unicycler) - de novo assembly
+* [Quast](#quast) - quality control of de novo assembly
+* [Bandage](#bandage) - Visualization of *de novo* assemblies
 * [MultiQC](#multiqc) - Aggregate report describing results and QC from the whole pipeline
 * [Pipeline information](#pipeline-information) - Report metrics generated during the workflow execution
+
+### Trimmomatic
+
+<details markdown="1">
+<summary>Output files</summary>
+
+* `processing/trimmomatic`
+    * `*{paired,unpaired}.trim_{1,2}.fastq.gz*`: Trimmed reads.
+    * `*.summary`: Summary of adapter trimming.
+
+[Trimmomatic](https://github.com/usadellab/Trimmomatic) is a software tool commonly used in bioinformatics and genomics research for quality control and preprocessing of high-throughput sequencing data, particularly from Next-Generation Sequencing (NGS) technologies. It helps to remove adapter sequences, low-quality reads, and other artifacts from raw sequencing data, resulting in cleaner and more reliable data for downstream analysis.
+</details>
 
 ### FastQC
 
 <details markdown="1">
 <summary>Output files</summary>
 
-* `fastqc/`
+* `processing/fastqc/`
     * `*_fastqc.html`: FastQC report containing quality metrics.
     * `*_fastqc.zip`: Zip archive containing the FastQC report, tab-delimited data file and plot images.
 
@@ -36,6 +53,57 @@ The pipeline is built using [Nextflow](https://www.nextflow.io/) and processes d
 ![MultiQC - FastQC adapter content plot](images/mqc_fastqc_adapter.png)
 
 > **NB:** The FastQC plots displayed in the MultiQC report shows _untrimmed_ reads. They may contain adapter sequence and potentially regions with low quality.
+
+
+### Mash
+
+<details markdown="1">
+<summary>Output files</summary>
+
+* `contamination_screen/screen`
+    * `*.trim_{1,2}.screen`: Mash screen output. 
+
+[Mash](https://github.com/marbl/Mash) is a bioinformatics tool used for fast genome and metagenome distance estimation. It calculates pairwise distances between genomic sequences or metagenomic samples based on their k-mer content. Mash is commonly used to identify relatedness between genomes, classify strains, detect contamination, and perform large-scale genomic comparisons. It is known for its speed and scalability, making it useful for analyzing large datasets in a time-efficient manner.
+
+</details>
+
+### Unicycler
+
+<details markdown="1">
+<summary>Output files</summary>
+
+* `assembly/unicycler`
+    * `*.scafolds.fa.gz`: Genome *de novo* assemblies
+    * `*.assembly.gfa.gz`: 
+    * `*.unicycler.log` : Assembly logs
+
+[Unicycler](https://github.com/rrwick/Unicycler) is a bioinformatics tool used for hybrid assembly of bacterial genomes. It combines the strengths of both de novo assembly and read mapping approaches to generate high-quality, complete genome assemblies from Illumina short reads and long-read sequencing technologies such as Oxford Nanopore or PacBio. Unicycler employs a multi-step process that involves initial assembly, read mapping, error correction, and polishing to generate a single circularized contig representing the complete genome. It is widely used in bacterial genomics research to obtain accurate and comprehensive genome assemblies.
+
+</details>
+
+### Quast
+
+<details markdown="1">
+<summary>Output files</summary>
+
+* `assembly/unicycler/quast`
+    * `*.`: 
+
+[QUAST](https://github.com/ablab/quast) is a bioinformatics tool used for quality assessment of genome assemblies. It stands for "Quality Assessment Tool for Genome Assemblies" and is commonly used to evaluate the completeness, accuracy, and overall quality of assembled genomes. Quast compares the assembly to a reference genome (if available) or generates various statistics and metrics to assess factors such as assembly size, contiguity, misassemblies, gene annotation, and coverage. It provides a comprehensive analysis of genome assemblies and helps researchers assess the quality and reliability of their genomic data.
+
+</details>
+
+### Bandage
+
+<details markdown="1">
+<summary>Output files</summary>
+
+* `assembly/unicycler/bandage`
+    * `*.{png,svg}`: Banage image to visualize genome assemblies
+
+[Bandage](https://rrwick.github.io/Bandage/) is a bioinformatics visualization tool used for the exploration and analysis of genome assembly graphs. It is designed specifically for visualizing and manipulating large-scale assembly graphs generated from de novo assembly methods, such as those produced by long-read sequencing technologies like PacBio or Oxford Nanopore. Bandage allows users to visualize and navigate through the complex connections and relationships within the assembly graph, aiding in the identification of structural variations, repetitive regions, and potential assembly errors. It is a valuable tool for gaining insights into the structure and organization of genomes.
+
+</details>
 
 ### MultiQC
 

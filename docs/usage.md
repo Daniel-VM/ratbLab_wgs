@@ -57,10 +57,10 @@ An [example samplesheet](../assets/samplesheet.csv) has been provided with the p
 The typical command for running the pipeline is as follows:
 
 ```console
-nextflow run main.nf --input samplesheet.csv -profile docker
+nextflow run main.nf --input samplesheet.csv -profile singularity --illumina_clip 'path/to/trimomatic_adapersFile' --mash_screen_db path/to/mash_db.msh
 ```
 
-This will launch the pipeline with the `docker` configuration profile. See below for more information about profiles.
+This will launch the pipeline with the `singularity` configuration profile. See below for more information about profiles.
 
 Note that the pipeline will create the following files in your working directory:
 
@@ -118,7 +118,7 @@ If `-profile` is not specified, the pipeline will run locally and expect all sof
     * A generic configuration profile to be used with [Charliecloud](https://hpc.github.io/charliecloud/)
 * `conda`
     * A generic configuration profile to be used with [Conda](https://conda.io/docs/). Please only use Conda as a last resort i.e. when it's not possible to run the pipeline with Docker, Singularity, Podman, Shifter or Charliecloud.
-* `test`
+* `test` *(not-working so far)*
     * A profile with a complete configuration for automated testing
     * Includes links to test data so needs no other parameters
 

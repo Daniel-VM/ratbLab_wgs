@@ -89,7 +89,7 @@ workflow WGS_BACTERIA {
     MASH_SCREEN ( 
         ch_trimmed_reads.transpose(),
         params.mash_screen_db
-     )
+        )
     
     // SUBWORKFLOW: GENOME ASSEMBLY
     GENOME_ASSEMBLY(
