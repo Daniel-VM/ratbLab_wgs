@@ -19,16 +19,14 @@ logger = logging.getLogger()
 =============================================================
 HEADER
 =============================================================
-FUNCTION: search for all mash files (ends with .winner.tab), find and count the representative reference,
+FUNCTION: search for all mash files (ends with .screen), find and count the representative reference,
     and look for contamination, several species in winner mode
 INSTITUTION:CNM-ISCIII
 AUTHOR: Pedro J. Sola (pedroscampoy@gmail.com)
-d^v^b
+EDITED BY: Daniel-VM (https://github.com/Daniel-VM)
 VERSION=0.1
 CREATED: 23 March 2020
 REVISION: 
-
-TODO:
 
 ================================================================
 END_OF_HEADER
@@ -91,7 +89,7 @@ def find_contamination_mash(folder, output_file):
         #Find common reference from mash result
         for root, _, files in os.walk(folder):
             for name in files:
-                if name.endswith(".winner.tab"):
+                if name.endswith(".screen"):
                     filename = os.path.join(root, name)
                     sample = name.split('.')[0]
                     logger.info(sample)
