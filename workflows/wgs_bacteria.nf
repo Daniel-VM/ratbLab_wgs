@@ -4,6 +4,7 @@
     WGS Bacteria || ratb-isciii Lab
 ======================================================
 */
+def summary_params = NfcoreSchema.paramsSummaryMap(workflow, params)
 
 // -- TODO: Log info
 // -- TODO: Schema parsing
@@ -18,12 +19,24 @@ if (params.input)     { ch_input = file( params.input, checkIfExists: true ) }
 
 /*
 ======================================================
+    CONFIG FILES
+======================================================
+*/
+ch_multiqc_config           = file("$projectDir/assets/multiqc_config.yaml", checkIfExists: true)
+ch_multiqc_custom_config    = params.multiqc_config ? Channel.fromPath(params.multiqc_config) : Channel.empty()
+workflow_summary            = WorkflowratbLab_wgs.paramsSummaryMultiqc(workflow, summary_params)
+ch_workflow_summary         = Channel.value(workflow_summary)
+
+
+/*
+======================================================
     LOCAL MODULES/SUBWORKFLOWS
 ======================================================
 */
 include { TRIMMOMMATIC_FASTQC   } from '../subworkflows/local/preprocessing'
 include { GENOME_ASSEMBLY       } from '../subworkflows/local/genomeassembly'
 include { REPORT_MASH_SCREEN    } from '../modules/local/report_mash_screen'
+
 /*
 ======================================================
     NF-CORE MODULES/SUBWORKFLOWS
@@ -32,7 +45,8 @@ include { REPORT_MASH_SCREEN    } from '../modules/local/report_mash_screen'
 include { INPUT_CHECK                   } from '../subworkflows/local/input_check'
 include { CAT_FASTQ                     } from '../modules/nf-core/cat/fastq/main'
 include { MASH_SCREEN                   } from '../modules/nf-core/mash/screen/main'        
-include { CUSTOM_DUMPSOFTWAREVERSIONS   } from '../modules/nf-core/custom/dumpsoftwareversions/main'               
+include { CUSTOM_DUMPSOFTWAREVERSIONS   } from '../modules/nf-core/custom/dumpsoftwareversions/main'
+include { MULTIQC                       } from '../modules/nf-core/multiqc/main'
 
 /*
 ======================================================
@@ -41,12 +55,12 @@ include { CUSTOM_DUMPSOFTWAREVERSIONS   } from '../modules/nf-core/custom/dumpso
 */
 
 workflow WGS_BACTERIA {
-    ch_versions = Channel.empty()
+    ch_versions         = Channel.empty()
+    ch_multiqc_files    = Channel.empty()
 
     //
     // SUBWORKFLOW: Read samplesheet, validate and stage input files
     //
-    // -- FIXME: Seems that insead of appearing reads in the multiple branch, they appear into the single branch. Why?. 
     INPUT_CHECK (
         ch_input
     )
@@ -86,9 +100,8 @@ workflow WGS_BACTERIA {
 
     ch_versions = ch_versions.mix(TRIMMOMMATIC_FASTQC.out.versions)
 
+/*
     // MODULE: SCREEN FOR CONAMINANTS
-    // TODO: replace MASH_SCREEN with CUSTMO_MASH_SCREEN (add ratb lablog steps)
-    // TODO: collect this output and passit to ratb's py script
     MASH_SCREEN ( 
         ch_trimmed_reads.transpose(),
         params.mash_screen_db
@@ -105,6 +118,19 @@ workflow WGS_BACTERIA {
         ch_trimmed_reads.map{ meta, fastq -> [meta, fastq, []] },
         null, // ch_fasta,
         null, // ch_gff
+    )
+*/
+    // MODULE: JOIN QC METRICS
+    ch_multiqc_files = ch_multiqc_files.mix(Channel.from(ch_multiqc_config))
+    ch_multiqc_files = ch_multiqc_files.mix(ch_multiqc_custom_config.collect().ifEmpty([]))
+    ch_multiqc_files = ch_multiqc_files.mix(ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'))
+    ch_multiqc_files = ch_multiqc_files.mix(TRIMMOMMATIC_FASTQC.out.multiqc_files)
+
+//    ch_multiqc_files = ch_multiqc_files.mix(GENOME_ASSEMBLY.out.multiqc_files)
+//    ch_multiqc_files = ch_multiqc_files.mix(CUSTOM_DUMPSOFTWAREVERSIONS.out.mqc_yml.collect())
+
+    MULTIQC(
+        ch_multiqc_files.collect()
     )
 
     // MODULE: Unify program versions
