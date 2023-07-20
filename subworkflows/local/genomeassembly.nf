@@ -34,7 +34,7 @@ workflow GENOME_ASSEMBLY{
 
     main:
     ch_versions = Channel.empty()
-//    ch_multiqc  = Channel.empty()
+    ch_multiqc  = Channel.empty()
 
     //
     // MODULE: Genome Assembly
@@ -73,7 +73,7 @@ workflow GENOME_ASSEMBLY{
         false,
         false
     )
-//    ch_multiqc  = ch_multiqc.mix(QUAST.output.tsv)
+    ch_multiqc  = ch_multiqc.mix(QUAST.output.tsv)
     ch_versions = ch_versions.mix(QUAST.out.versions.first())
 
     // MODULE: Visualization of assemblies with Bandage
@@ -118,5 +118,5 @@ workflow GENOME_ASSEMBLY{
     bandage_svg     = ch_bandage_svg                    // channel: [ val(meta), [ svg ] ]
 
     versions        = ch_versions                       // channel: [ versions.yml ]
-//    multiqc_files   = ch_multiqc                        // channel: [ multiqc_files ]
+    multiqc_files   = ch_multiqc                        // channel: [ multiqc_files ]
 }

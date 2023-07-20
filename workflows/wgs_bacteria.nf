@@ -100,7 +100,7 @@ workflow WGS_BACTERIA {
 
     ch_versions = ch_versions.mix(TRIMMOMMATIC_FASTQC.out.versions)
 
-/*
+
     // MODULE: SCREEN FOR CONAMINANTS
     MASH_SCREEN ( 
         ch_trimmed_reads.transpose(),
@@ -119,22 +119,22 @@ workflow WGS_BACTERIA {
         null, // ch_fasta,
         null, // ch_gff
     )
-*/
+    ch_versions = ch_versions.mix( GENOME_ASSEMBLY.out.versions )
+
+    // MODULE: Unify program versions
+    CUSTOM_DUMPSOFTWAREVERSIONS (
+        ch_versions.unique().collectFile(name: 'collated_versions.yml')
+    )
+
     // MODULE: JOIN QC METRICS
     ch_multiqc_files = ch_multiqc_files.mix(Channel.from(ch_multiqc_config))
     ch_multiqc_files = ch_multiqc_files.mix(ch_multiqc_custom_config.collect().ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'))
     ch_multiqc_files = ch_multiqc_files.mix(TRIMMOMMATIC_FASTQC.out.multiqc_files)
-
-//    ch_multiqc_files = ch_multiqc_files.mix(GENOME_ASSEMBLY.out.multiqc_files)
-//    ch_multiqc_files = ch_multiqc_files.mix(CUSTOM_DUMPSOFTWAREVERSIONS.out.mqc_yml.collect())
+    ch_multiqc_files = ch_multiqc_files.mix(GENOME_ASSEMBLY.out.multiqc_files)
+    ch_multiqc_files = ch_multiqc_files.mix(CUSTOM_DUMPSOFTWAREVERSIONS.out.mqc_yml.collect())
 
     MULTIQC(
         ch_multiqc_files.collect()
     )
-
-    // MODULE: Unify program versions
-    CUSTOM_DUMPSOFTWAREVERSIONS (
-        ch_versions.unique().collectFile(name: 'collated_versions.yml')
-        )
 }
