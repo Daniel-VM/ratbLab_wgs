@@ -24,4 +24,5 @@ The ratbLab_wgs workflow has been implemented in Nextflow DSL2.
     5.2 Quality check of assemblies with [QUAST](https://github.com/ablab/quast)
     
     5.3 Visualization of *de novo* assemblies with [Bandage](https://rrwick.github.io/Bandage/)
+6. Workflow statistics with [MultiQC](https://github.com/ewels/MultiQC)
 
