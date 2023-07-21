@@ -8,7 +8,7 @@ class WorkflowratbLab_wgs {
     // Check and validate parameters
     //
     public static void initialise(params, log) {
-        genomeExistsError(params, log)
+        //genomeExistsError(params, log)
 
         if (!params.input) {
                log.error "Input file not specified with e.g. '--input sample_sheet.csv' or via a detectable config file."
