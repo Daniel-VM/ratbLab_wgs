@@ -4,9 +4,13 @@
     WGS Bacteria || ratb-isciii Lab
 ======================================================
 */
-def summary_params = NfcoreSchema.paramsSummaryMap(workflow, params)
 
-// -- TODO: Log info
+log.info "\n============================================="
+log.info " ISCIII/ratbLab - Genome Bacterial Assembly "
+log.info "===============================================\n"
+def summary_params = NfcoreSchema.paramsSummaryMap(workflow, params)
+WorkflowratbLab_wgs.initialise(params,log)
+
 // -- TODO: Schema parsing
 // -- TODO: Help man page
 // -- TODO: Validate input
@@ -90,7 +94,7 @@ workflow WGS_BACTERIA {
     .set { ch_cat_fastq }
     
     ch_versions = ch_versions.mix(CAT_FASTQ.out.versions.first().ifEmpty(null))
-
+/*
     // SUBWORKFLOW: QC AND PREPROCESSING
     TRIMMOMMATIC_FASTQC(
         ch_cat_fastq
@@ -137,4 +141,5 @@ workflow WGS_BACTERIA {
     MULTIQC(
         ch_multiqc_files.collect()
     )
+*/
 }

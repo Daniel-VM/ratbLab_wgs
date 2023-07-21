@@ -11,6 +11,13 @@ nextflow.enable.dsl = 2
 
 /*
 ======================================================
+    VALIDATE AND PRINT PARAMETERS SUMMARY
+======================================================
+*/
+WorkflowMain.initialise(workflow, params, log)
+
+/*
+======================================================
     NAMED WORKFLOW FOR PIPELINE
 ======================================================
 */
