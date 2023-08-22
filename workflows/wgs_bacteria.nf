@@ -106,8 +106,10 @@ workflow WGS_BACTERIA {
 
 
     // MODULE: SCREEN FOR CONAMINANTS
+    ch_mash_input = ch_trimmed_reads.map { meta, reads -> [meta, reads[0]]}
+
     MASH_SCREEN ( 
-        ch_trimmed_reads.transpose(),
+        ch_mash_input.transpose(),
         params.mash_screen_db
     )
     ch_versions = ch_versions.mix(MASH_SCREEN.out.versions)
