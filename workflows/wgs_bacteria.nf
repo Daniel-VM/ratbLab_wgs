@@ -104,7 +104,7 @@ workflow WGS_BACTERIA {
 
     ch_versions = ch_versions.mix(TRIMMOMMATIC_FASTQC.out.versions)
 
-/*
+
     // MODULE: SCREEN FOR CONAMINANTS
     ch_mash_input = ch_trimmed_reads.map { meta, reads -> [meta, reads[0]]}
 
@@ -143,5 +143,4 @@ workflow WGS_BACTERIA {
     MULTIQC(
         ch_multiqc_files.collect()
     )
-*/
 }
