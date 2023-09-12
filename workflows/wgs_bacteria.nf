@@ -37,7 +37,6 @@ ch_workflow_summary         = Channel.value(workflow_summary)
     LOCAL MODULES/SUBWORKFLOWS
 ======================================================
 */
-include { TRIMMOMMATIC_FASTQC   } from '../subworkflows/local/preprocessing'
 include { GENOME_ASSEMBLY       } from '../subworkflows/local/genomeassembly'
 include { REPORT_MASH_SCREEN    } from '../modules/local/report_mash_screen'
 
@@ -48,9 +47,10 @@ include { REPORT_MASH_SCREEN    } from '../modules/local/report_mash_screen'
 */
 include { INPUT_CHECK                   } from '../subworkflows/local/input_check'
 include { CAT_FASTQ                     } from '../modules/nf-core/cat/fastq/main'
-include { MASH_SCREEN                   } from '../modules/nf-core/mash/screen/main'        
+include { MASH_SCREEN                   } from '../modules/nf-core/mash/screen/main'
 include { CUSTOM_DUMPSOFTWAREVERSIONS   } from '../modules/nf-core/custom/dumpsoftwareversions/main'
 include { MULTIQC                       } from '../modules/nf-core/multiqc/main'
+include { FASTQ_TRIM_FASTP_FASTQC       } from '../subworkflows/nf-core/fastq_trim_fastp_fastqc/main'
 
 /*
 ======================================================
@@ -92,28 +92,32 @@ workflow WGS_BACTERIA {
     .reads
     .mix(ch_fastq.single)
     .set { ch_cat_fastq }
-    
+
     ch_versions = ch_versions.mix(CAT_FASTQ.out.versions.first().ifEmpty(null))
 
-    // SUBWORKFLOW: QC AND PREPROCESSING
-    TRIMMOMMATIC_FASTQC(
-        ch_cat_fastq
+    //
+    // SUBWORKFLOW: Short reads QC and trim adapters
+    //
+    FASTQ_TRIM_FASTP_FASTQC (
+        ch_cat_fastq,
+        [],
+        params.save_trimmed_fail,
+        params.save_merged,
+        params.skip_fastp,
+        params.skip_fastqc
     )
-    .trimmed_reads
-    .set { ch_trimmed_reads }
-
-    ch_versions = ch_versions.mix(TRIMMOMMATIC_FASTQC.out.versions)
-
+    ch_trimmed_reads = FASTQ_TRIM_FASTP_FASTQC.out.reads
+    ch_versions = ch_versions.mix(FASTQ_TRIM_FASTP_FASTQC.out.versions)
 
     // MODULE: SCREEN FOR CONAMINANTS
     ch_mash_input = ch_trimmed_reads.map { meta, reads -> [meta, reads[0]]}
 
-    MASH_SCREEN ( 
+    MASH_SCREEN (
         ch_mash_input.transpose(),
         params.mash_screen_db
     )
     ch_versions = ch_versions.mix(MASH_SCREEN.out.versions)
-    
+
     REPORT_MASH_SCREEN(
         MASH_SCREEN.out.screen.collect{ it[1] }
     )
@@ -136,7 +140,8 @@ workflow WGS_BACTERIA {
     ch_multiqc_files = ch_multiqc_files.mix(Channel.from(ch_multiqc_config))
     ch_multiqc_files = ch_multiqc_files.mix(ch_multiqc_custom_config.collect().ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'))
-    ch_multiqc_files = ch_multiqc_files.mix(TRIMMOMMATIC_FASTQC.out.multiqc_files)
+    ch_multiqc_files = ch_multiqc_files.mix(FASTQ_TRIM_FASTP_FASTQC.out.fastqc_raw_zip.collect{it[1]}.ifEmpty([]))
+    ch_multiqc_files = ch_multiqc_files.mix(FASTQ_TRIM_FASTP_FASTQC.out.trim_json.collect{it[1]}.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(GENOME_ASSEMBLY.out.multiqc_files)
     ch_multiqc_files = ch_multiqc_files.mix(CUSTOM_DUMPSOFTWAREVERSIONS.out.mqc_yml.collect())
 
