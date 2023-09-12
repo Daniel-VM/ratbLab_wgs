@@ -20,10 +20,15 @@
                         "git_sha": "82501fe6d0d12614db67751d30af98d16e63dc59",
                         "installed_by": ["modules"]
                     },
+                    "fastp": {
+                        "branch": "master",
+                        "git_sha": "d497a4868ace3302016ea8ed4b395072d5e833cd",
+                        "installed_by": ["fastq_trim_fastp_fastqc"]
+                    },
                     "fastqc": {
                         "branch": "master",
                         "git_sha": "49b18b1639f4f7104187058866a8fab33332bdfe",
-                        "installed_by": ["modules"]
+                        "installed_by": ["modules", "fastq_trim_fastp_fastqc"]
                     },
                     "gunzip": {
                         "branch": "master",
@@ -58,7 +63,13 @@
                 }
             },
             "subworkflows": {
-                "nf-core": {}
+                "nf-core": {
+                    "fastq_trim_fastp_fastqc": {
+                        "branch": "master",
+                        "git_sha": "dedc0e31087f3306101c38835d051bf49789445a",
+                        "installed_by": ["subworkflows"]
+                    }
+                }
             }
         }
     }
