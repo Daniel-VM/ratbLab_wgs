@@ -266,40 +266,35 @@
     ],
     "properties": {
         "skip_fastqc": {
-            "type": "string",
-            "default": "false"
+            "type": "boolean"
         },
         "skip_fastp": {
-            "type": "string",
-            "default": "false"
+            "type": "boolean"
         },
         "save_trimmed_fail": {
-            "type": "string",
-            "default": "false"
+            "type": "boolean"
         },
         "save_merged": {
-            "type": "string",
-            "default": "false"
+            "type": "boolean"
         },
         "mash_screen_db": {
-            "type": "string",
-            "default": "None"
+            "type": "string"
         },
         "mash_winner": {
-            "type": "string",
-            "default": "true"
+            "type": "boolean",
+            "default": true
         },
         "conservative_assembly": {
-            "type": "string",
-            "default": "true"
+            "type": "boolean",
+            "default": true
         },
         "kmerSize_assembly": {
             "type": "string",
             "default": "None"
         },
         "correct_assembly": {
-            "type": "string",
-            "default": "true"
+            "type": "boolean",
+            "default": true
         },
         "schema_ignore_params": {
             "type": "string",
