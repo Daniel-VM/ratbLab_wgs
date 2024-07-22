@@ -109,11 +109,9 @@ workflow WGS_BACTERIA {
     ch_trimmed_reads = FASTQ_TRIM_FASTP_FASTQC.out.reads
     ch_versions = ch_versions.mix(FASTQ_TRIM_FASTP_FASTQC.out.versions)
 
-    // MODULE: SCREEN FOR CONAMINANTS
-    ch_mash_input = ch_trimmed_reads.map { meta, reads -> [meta, reads[0]]}
-
+    // MODULE: SCREEN FOR CONAMINANTS WIH MASH
     MASH_SCREEN (
-        ch_mash_input.transpose(),
+        ch_trimmed_reads.map { meta, reads -> [ meta, reads[0] ] }.transpose(),
         params.mash_screen_db
     )
     ch_versions = ch_versions.mix(MASH_SCREEN.out.versions)
@@ -122,6 +120,13 @@ workflow WGS_BACTERIA {
         MASH_SCREEN.out.screen.collect{ it[1] }
     )
     ch_versions = ch_versions.mix(REPORT_MASH_SCREEN.out.versions)
+
+    // MODULE: SCREEN FOR CONTMAIANTS WITH KMERFINDER
+//    KMERFINDER (
+//        ch_trimmed_reads,
+//        kmerfinderDB
+//    )
+//    ch_versions = ch_versions.mix( KMERFINDER.out.versions )
 
     // SUBWORKFLOW: GENOME ASSEMBLY
     GENOME_ASSEMBLY(
